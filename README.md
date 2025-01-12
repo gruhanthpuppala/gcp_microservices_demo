@@ -1,3 +1,10 @@
+Microservices Demo (Forked and Modified)
+This repository is a fork of the [GoogleCloudPlatform Microservices Demo](https://github.com/GoogleCloudPlatform/microservices-demo). 
+
+Original repository is licensed under [Apache 2.0 License](https://github.com/GoogleCloudPlatform/microservices-demo/blob/main/LICENSE). Modifications are included as per the license terms.
+
+
+
 <!-- <p align="center">
 <img src="/src/frontend/static/icons/Hipster_HeroLogoMaroon.svg" width="300" alt="Online Boutique" />
 </p> -->
