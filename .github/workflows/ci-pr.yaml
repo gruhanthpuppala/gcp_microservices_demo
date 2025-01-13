@@ -50,6 +50,8 @@ jobs:
     runs-on: [self-hosted, is-enabled]
     env:
       GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+    run: |
+      echo "${GCP_SERVICE_ACCOUNT_KEY}" > key.json
       PROJECT_ID: ${{ secrets.PROJECT_ID }}
       PR_CLUSTER: ${{ secrets.PR_CLUSTER }}
       REGION: ${{ secrets.REGION }}
