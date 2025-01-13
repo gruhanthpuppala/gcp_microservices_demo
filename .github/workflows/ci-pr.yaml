@@ -60,8 +60,7 @@ jobs:
       - name: Authenticate with GCP
         run: |
           echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key.json
-          gcloud auth activate-service-account --key-file=key.json
-          gcloud config set project $PROJECT_ID
+          
 
       - name: Validate JSON
         run: jq . key.json
