@@ -48,9 +48,14 @@ jobs:
 
       - name: Authenticate with GCP
         run: |
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > gcp_service_account_key_1.json
-          gcloud auth activate-service-account --key-file=gcp_service_account_key_1.json
+          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key_1.json
+          gcloud auth activate-service-account --key-file=key_1.json
           gcloud config set project $PROJECT_ID
+
+      - name: Debug Key File
+        run: |
+          ls -l
+          cat key_1.json
 
       - name: Connect to GKE Cluster
         run: |
