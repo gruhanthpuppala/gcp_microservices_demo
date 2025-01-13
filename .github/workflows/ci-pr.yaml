@@ -12,6 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 name: "Continuous Integration - Pull Request"
 
 on:
@@ -34,32 +48,39 @@ concurrency:
 jobs:
   deployment-tests:
     runs-on: [self-hosted, is-enabled]
-    env:
-      GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-      PROJECT_ID: ${{ secrets.PROJECT_ID }}
-      PR_CLUSTER: ${{ secrets.PR_CLUSTER }}
-      REGION: ${{ secrets.REGION }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: Verify GCP CLI
-        run: |
-          gcloud --version
-          which gcloud
-
-      - name: Debug Secret Output
-        run: |
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
 
       # Authenticate with GCP
       - name: Authenticate with GCP
         run: |
-          printf "%s" "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key_1.json
+          # Replace these variables with actual values
+          GCP_SERVICE_ACCOUNT_KEY='{
+            "type": "service_account",
+            "project_id": "your-project-id",
+            "private_key_id": "your-private-key-id",
+            "private_key": "-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhki...\\n-----END PRIVATE KEY-----\\n",
+            "client_email": "your-service-account-email",
+            "client_id": "your-client-id",
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/your-service-account-email"
+          }'
+
+          PROJECT_ID="your-project-id"
+          PR_CLUSTER="your-cluster-name"
+          REGION="your-region"
+
+          # Write service account key to file
+          printf "%s" "$GCP_SERVICE_ACCOUNT_KEY" > key_1.json
+
+          # Authenticate with GCP
           gcloud auth activate-service-account --key-file=key_1.json
           gcloud config set project $PROJECT_ID
 
       # Debug Step: Validate the key file creation and content
-      # Remove this step after resolving the issue to avoid exposing sensitive data
       - name: Debug Key File
         run: |
           ls -l
