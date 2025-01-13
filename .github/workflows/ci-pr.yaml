@@ -45,21 +45,32 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      # Authenticate with GCP
       - name: Authenticate with GCP
         run: |
           printf "%s" "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key_1.json
           gcloud auth activate-service-account --key-file=key_1.json
           gcloud config set project $PROJECT_ID
 
+      # Debug Step: Validate the key file creation and content
+      # Remove this step after resolving the issue to avoid exposing sensitive data
+      - name: Debug Key File
+        run: |
+          ls -l
+          cat key_1.json
+
+      # Connect to GKE Cluster
       - name: Connect to GKE Cluster
         run: |
           gcloud container clusters get-credentials $PR_CLUSTER --region $REGION --project $PROJECT_ID
 
+      # Create Namespace for PR
       - name: Create Namespace for PR
         run: |
           NAMESPACE="pr${{ github.event.pull_request.number }}"
           kubectl create namespace $NAMESPACE
 
+      # Build and Push Images with Skaffold
       - name: Build and Push Images with Skaffold
         run: |
           NAMESPACE="pr${{ github.event.pull_request.number }}"
@@ -68,10 +79,12 @@ jobs:
             --tag=${{ github.event.pull_request.number }} \
             --namespace=$NAMESPACE -p network-policies
 
+      # Wait for Pods to Be Ready
       - name: Wait for Pods to Be Ready
         run: |
           kubectl -n pr${{ github.event.pull_request.number }} wait --for=condition=available --timeout=1000s deployment --all
 
+      # Query External IP for Frontend Service
       - name: Query External IP for Frontend Service
         run: |
           kubectl -n pr${{ github.event.pull_request.number }} get service frontend-external -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
