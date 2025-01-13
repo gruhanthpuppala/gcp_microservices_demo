@@ -74,10 +74,10 @@ jobs:
           REGION="your-region"
 
           # Write service account key to file
-          printf "%s" "$GCP_SERVICE_ACCOUNT_KEY" > key_1.json
+          printf "%s" "$GCP_SERVICE_ACCOUNT_KEY" > key.json
 
           # Authenticate with GCP
-          gcloud auth activate-service-account --key-file=key_1.json
+          gcloud auth activate-service-account --key-file=key.json
           gcloud config set project $PROJECT_ID
 
       # Debug Step: Validate the key file creation and content
