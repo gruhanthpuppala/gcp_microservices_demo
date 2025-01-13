@@ -85,7 +85,12 @@ jobs:
         run: |
           ls -l
           cat key_1.json
-
+      - name: Debug Environment
+        run: |
+          echo "GCP CLI Version:"
+          gcloud --version
+          echo "OpenSSL Version:"
+          openssl version
       # Connect to GKE Cluster
       - name: Connect to GKE Cluster
         run: |
