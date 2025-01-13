@@ -63,8 +63,6 @@ jobs:
           echo "PROJECT_ID=${{ secrets.PROJECT_ID }}"
           echo "PR_CLUSTER=${{ secrets.PR_CLUSTER }}"
           echo "REGION=${{ secrets.REGION }}"
-      - name: Validate JSON
-        run: jq . key.json
 
       - name: Connect to GKE Cluster
         run: |
