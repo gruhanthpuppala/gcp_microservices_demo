@@ -14,7 +14,6 @@
 
 
 
-
 name: "Continuous Integration - Pull Request"
 
 on:
@@ -52,6 +51,7 @@ jobs:
           gcloud auth activate-service-account --key-file=key_1.json
           gcloud config set project $PROJECT_ID
 
+      # Debug Step: Validate the key file creation and content
       - name: Debug Key File
         run: |
           ls -l
@@ -59,12 +59,12 @@ jobs:
 
       - name: Connect to GKE Cluster
         run: |
-          gcloud container clusters get-credentials $PR_CLUSTER --region $REGION
+          gcloud container clusters get-credentials $PR_CLUSTER --region $REGION --project $PROJECT_ID
 
       - name: Create Namespace for PR
         run: |
           NAMESPACE="pr${{ github.event.pull_request.number }}"
-          kubectl create namespace $NAMESPACE || echo "Namespace already exists"
+          kubectl create namespace $NAMESPACE
 
       - name: Build and Push Images with Skaffold
         run: |
@@ -74,18 +74,14 @@ jobs:
             --tag=${{ github.event.pull_request.number }} \
             --namespace=$NAMESPACE -p network-policies
 
-      - name: Wait for Pods to be Ready
+      - name: Wait for Pods to Be Ready
         run: |
-          NAMESPACE="pr${{ github.event.pull_request.number }}"
-          kubectl -n $NAMESPACE wait --for=condition=available --timeout=1000s deployment --all
+          kubectl -n pr${{ github.event.pull_request.number }} wait --for=condition=available --timeout=1000s deployment --all
 
       - name: Query External IP for Frontend Service
         run: |
-          NAMESPACE="pr${{ github.event.pull_request.number }}"
-          kubectl -n $NAMESPACE get service frontend-external -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+          kubectl -n pr${{ github.event.pull_request.number }} get service frontend-external -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
 
-      - name: Clean Up Namespace (Optional)
-        if: ${{ always() }}
-        run: |
-          NAMESPACE="pr${{ github.event.pull_request.number }}"
-          kubectl delete namespace $NAMESPACE || echo "Namespace already deleted"
+      # Cleanup Step: Delete the key file after authentication is complete
+      - name: Clean Up Key File
+        run: rm -f key_1.json
