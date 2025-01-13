@@ -63,6 +63,9 @@ jobs:
           gcloud auth activate-service-account --key-file=key.json
           gcloud config set project $PROJECT_ID
 
+      - name: Validate JSON
+        run: jq . key.json
+
       - name: Connect to GKE Cluster
         run: |
           gcloud container clusters get-credentials $PR_CLUSTER --region $REGION
