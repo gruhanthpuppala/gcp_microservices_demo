@@ -46,14 +46,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Debug key.json
-        run: |
-          cat key.json
-
       - name: Authenticate with GCP
         run: |
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key.json
-          gcloud auth activate-service-account --key-file=key.json
+          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > gcp_service_account_key_1.json
+          gcloud auth activate-service-account --key-file=gcp_service_account_key_1.json
           gcloud config set project $PROJECT_ID
 
       - name: Connect to GKE Cluster
