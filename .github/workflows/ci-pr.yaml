@@ -48,61 +48,30 @@ concurrency:
 jobs:
   deployment-tests:
     runs-on: [self-hosted, is-enabled]
+    env:
+      GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      PROJECT_ID: ${{ secrets.PROJECT_ID }}
+      PR_CLUSTER: ${{ secrets.PR_CLUSTER }}
+      REGION: ${{ secrets.REGION }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Authenticate with GCP
       - name: Authenticate with GCP
         run: |
-          # Replace these variables with actual values
-          GCP_SERVICE_ACCOUNT_KEY='{
-            "type": "service_account",
-            "project_id": "your-project-id",
-            "private_key_id": "your-private-key-id",
-            "private_key": "-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhki...\\n-----END PRIVATE KEY-----\\n",
-            "client_email": "your-service-account-email",
-            "client_id": "your-client-id",
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token",
-            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/your-service-account-email"
-          }'
-
-          PROJECT_ID="your-project-id"
-          PR_CLUSTER="your-cluster-name"
-          REGION="your-region"
-
-          # Write service account key to file
-          printf "%s" "$GCP_SERVICE_ACCOUNT_KEY" > key.json
-
-          # Authenticate with GCP
+          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key.json
           gcloud auth activate-service-account --key-file=key.json
           gcloud config set project $PROJECT_ID
 
-      # Debug Step: Validate the key file creation and content
-      - name: Debug Key File
-        run: |
-          ls -l
-          cat key_1.json
-      - name: Debug Environment
-        run: |
-          echo "GCP CLI Version:"
-          gcloud --version
-          echo "OpenSSL Version:"
-          openssl version
-      # Connect to GKE Cluster
       - name: Connect to GKE Cluster
         run: |
-          gcloud container clusters get-credentials $PR_CLUSTER --region $REGION --project $PROJECT_ID
+          gcloud container clusters get-credentials $PR_CLUSTER --region $REGION
 
-      # Create Namespace for PR
       - name: Create Namespace for PR
         run: |
           NAMESPACE="pr${{ github.event.pull_request.number }}"
-          kubectl create namespace $NAMESPACE
+          kubectl create namespace $NAMESPACE || echo "Namespace already exists"
 
-      # Build and Push Images with Skaffold
       - name: Build and Push Images with Skaffold
         run: |
           NAMESPACE="pr${{ github.event.pull_request.number }}"
@@ -111,16 +80,18 @@ jobs:
             --tag=${{ github.event.pull_request.number }} \
             --namespace=$NAMESPACE -p network-policies
 
-      # Wait for Pods to Be Ready
-      - name: Wait for Pods to Be Ready
+      - name: Wait for Pods to be Ready
         run: |
-          kubectl -n pr${{ github.event.pull_request.number }} wait --for=condition=available --timeout=1000s deployment --all
+          NAMESPACE="pr${{ github.event.pull_request.number }}"
+          kubectl -n $NAMESPACE wait --for=condition=available --timeout=1000s deployment --all
 
-      # Query External IP for Frontend Service
       - name: Query External IP for Frontend Service
         run: |
-          kubectl -n pr${{ github.event.pull_request.number }} get service frontend-external -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+          NAMESPACE="pr${{ github.event.pull_request.number }}"
+          kubectl -n $NAMESPACE get service frontend-external -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
 
-      # Cleanup Step: Delete the key file after authentication is complete
-      - name: Clean Up Key File
-        run: rm -f key_1.json
+      - name: Clean Up Namespace (Optional)
+        if: ${{ always() }}
+        run: |
+          NAMESPACE="pr${{ github.event.pull_request.number }}"
+          kubectl delete namespace $NAMESPACE || echo "Namespace already deleted"
