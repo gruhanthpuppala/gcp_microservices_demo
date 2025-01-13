@@ -45,9 +45,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+    - name: Debug Key File
+      run: |
+        echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key_1.json
+        cat key_1.json
+
       - name: Authenticate with GCP
         run: |
-          echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key_1.json
+          printf "%s" "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key_1.json
           gcloud auth activate-service-account --key-file=key_1.json
           gcloud config set project $PROJECT_ID
 
