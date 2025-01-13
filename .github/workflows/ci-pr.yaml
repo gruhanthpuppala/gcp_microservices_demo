@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-
 name: "Continuous Integration - Pull Request"
 
 on:
@@ -49,7 +47,6 @@ jobs:
       - name: Authenticate with GCP
         run: |
           printf "%s" "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key_1.json
-          head key_1.json
           gcloud auth activate-service-account --key-file=key_1.json
           gcloud config set project $PROJECT_ID
 
