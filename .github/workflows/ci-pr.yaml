@@ -46,6 +46,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Debug key.json
+        run: |
+          cat key.json
+
       - name: Authenticate with GCP
         run: |
           echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key.json
