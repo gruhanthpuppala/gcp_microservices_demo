@@ -60,9 +60,9 @@ jobs:
       - name: Authenticate with GCP
         run: |
           echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" > key.json
-          echo "PROJECT_ID=${{ secrets.PROJECT_ID }}"
-          echo "PR_CLUSTER=${{ secrets.PR_CLUSTER }}"
-          echo "REGION=${{ secrets.REGION }}"
+          gcloud auth activate-service-account --key-file=key.json
+          gcloud config set project $PROJECT_ID
+          
 
       - name: Connect to GKE Cluster
         run: |
