@@ -12,20 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Copyright 2020 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 name: "Continuous Integration - Pull Request"
 on:
   pull_request:
@@ -71,17 +57,17 @@ jobs:
         run: |
           dotnet test src/cartservice/
 
-  deployment-tests: 
+  deployment-tests:
     runs-on: [self-hosted, is-enabled]
     needs: code-tests
-    strategy: 
-      matrix: 
+    strategy:
+      matrix:
         profile: ["local-code"]
       fail-fast: true
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{github.event.pull_request.head.sha}}
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Debugging Runner Info
         run: |
@@ -104,14 +90,15 @@ jobs:
           metadata:
             name: $NAMESPACE
           EOF
-          echo Deploying application
+          echo "Deploying application"
           skaffold config set --global local-cluster false
-          skaffold run --default-repo=us-docker.pkg.dev/$PROJECT_ID/pr-images --tag=${PR_NUMBER}-${{github.sha}} --namespace=$NAMESPACE -p network-policies
+          skaffold run --default-repo=us-docker.pkg.dev/$PROJECT_ID/pr-images --tag=${PR_NUMBER}-${{ github.sha }} --namespace=$NAMESPACE -p network-policies
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PROJECT_ID: "online-boutique-ci"
           PR_CLUSTER: "prs-gke-cluster"
           REGION: "us-central1"
+
       - name: Wait For Pods
         timeout-minutes: 20
         run: |
@@ -129,49 +116,52 @@ jobs:
           kubectl wait --for=condition=available --timeout=1000s deployment/productcatalogservice
           kubectl wait --for=condition=available --timeout=1000s deployment/recommendationservice
           kubectl wait --for=condition=available --timeout=1000s deployment/shippingservice
-    - name: Query EXTERNAL_IP for staging
-      timeout-minutes: 5
-      run: |
-        set -x
-        NAMESPACE="pr${PR_NUMBER}"
-        get_externalIP() {
-          kubectl get service frontend-external --namespace $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
-        }
-        until [[ -n "$(get_externalIP)" ]]; do
-          echo "Querying for external IP for frontend-external on namespace: $NAMESPACE"
-          sleep 3
-        done
-        EXTERNAL_IP=$(get_externalIP)
-        echo "::set-env name=EXTERNAL_IP::$EXTERNAL_IP"
-      env:
-        PR_NUMBER: ${{ github.event.pull_request.number }}
-    - name: Smoke Test
-      timeout-minutes: 5
-      run: |
-        set -x
-        # start fresh loadgenerator pod
-        kubectl delete pod -l app=loadgenerator
-        # wait for requests to come in
-        REQUEST_COUNT="0"
-        while [[ "$REQUEST_COUNT"  -lt "50"  ]]; do
+
+      - name: Query EXTERNAL_IP for staging
+        timeout-minutes: 5
+        run: |
+          set -x
+          NAMESPACE="pr${PR_NUMBER}"
+          get_externalIP() {
+            kubectl get service frontend-external --namespace $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+          }
+          until [[ -n "$(get_externalIP)" ]]; do
+            echo "Querying for external IP for frontend-external on namespace: $NAMESPACE"
+            sleep 3
+          done
+          EXTERNAL_IP=$(get_externalIP)
+          echo "::set-env name=EXTERNAL_IP::$EXTERNAL_IP"
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+
+      - name: Smoke Test
+        timeout-minutes: 5
+        run: |
+          set -x
+          # start fresh loadgenerator pod
+          kubectl delete pod -l app=loadgenerator
+          # wait for requests to come in
+          REQUEST_COUNT="0"
+          while [[ "$REQUEST_COUNT" -lt "50" ]]; do
             sleep 5
             REQUEST_COUNT=$(kubectl logs -l app=loadgenerator | grep Aggregated | awk '{print $2}')
-        done
-        # ensure there are no errors hitting endpoints
-        ERROR_COUNT=$(kubectl logs -l app=loadgenerator | grep Aggregated | awk '{print $3}' | sed "s/[(][^)]*[)]//g")
-        if [[ "$ERROR_COUNT" -gt "0" ]]; then
-          exit 1
-        fi
-    - name: Comment EXTERNAL_IP
-      timeout-minutes: 5
-      env:
-        COMMENTS_URL: ${{ github.event.pull_request.comments_url }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        curl \
-          -X POST \
-          $COMMENTS_URL \
-          -H "Content-Type: application/json" \
-          -H "Authorization: token $GITHUB_TOKEN" \
-          --data '{ "body": "🚲 PR staged at '"http://${EXTERNAL_IP}"'"}'
-        sleep 60
+          done
+          # ensure there are no errors hitting endpoints
+          ERROR_COUNT=$(kubectl logs -l app=loadgenerator | grep Aggregated | awk '{print $3}' | sed "s/[(][^)]*[)]//g")
+          if [[ "$ERROR_COUNT" -gt "0" ]]; then
+            exit 1
+          fi
+
+      - name: Comment EXTERNAL_IP
+        timeout-minutes: 5
+        env:
+          COMMENTS_URL: ${{ github.event.pull_request.comments_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl \
+            -X POST \
+            $COMMENTS_URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            --data '{ "body": "🚲 PR staged at '"http://${EXTERNAL_IP}"'" }'
+          sleep 60
