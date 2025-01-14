@@ -82,12 +82,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{github.event.pull_request.head.sha}}
-      - name: Debugging: Runner Info
+
+      - name: Debugging Runner Info
         run: |
           echo "Printing Runner Information"
           echo "Working Directory: $(pwd)"
           echo "Fetching Runner Public IP:"
           curl https://api.ipify.org
+
       - name: Build + Deploy PR images to GKE
         timeout-minutes: 20
         run: |
