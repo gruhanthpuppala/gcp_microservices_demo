@@ -80,7 +80,7 @@ jobs:
         timeout-minutes: 20
         run: |
           # Set Namespace
-          NAMESPACE="pr${PR_NUMBER}"
+          NAMESPACE="pr${{ github.event.pull_request.number }}"
           echo "NAMESPACE=${NAMESPACE}" >> $GITHUB_ENV
 
           # Authenticate with Docker Registry
@@ -89,48 +89,37 @@ jobs:
 
           # Authenticate and Get Cluster Credentials
           echo "Authenticating and getting cluster credentials..."
-          gcloud container clusters get-credentials $PR_CLUSTER --region $REGION --project $PROJECT_ID
+          gcloud container clusters get-credentials ${{ secrets.PR_CLUSTER }} --region ${{ secrets.REGION }} --project ${{ secrets.PROJECT_ID }}
 
           # Create Namespace if Not Exists
           kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
 
           # Deploy Application
           echo "Deploying application using Skaffold..."
-          skaffold run --default-repo=us-docker.pkg.dev/${PROJECT_ID}/pr-images \
-            --tag=${PR_NUMBER}-${{ github.sha }} \
+          skaffold run --default-repo=us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/pr-images \
+            --tag=${{ github.event.pull_request.number }}-${{ github.sha }} \
             --namespace=$NAMESPACE \
             -p network-policies
-            
-  env:
-    PR_NUMBER: ${{ github.event.pull_request.number }}
-    PROJECT_ID: ${{ secrets.PROJECT_ID }}
-    PR_CLUSTER: ${{ secrets.PR_CLUSTER }}
-    REGION: ${{ secrets.REGION }}
-
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          PR_CLUSTER: ${{ secrets.PR_CLUSTER }}
+          REGION: ${{ secrets.REGION }}
 
       - name: Wait For Pods
         timeout-minutes: 20
         run: |
           set -x
           kubectl config set-context --current --namespace=$NAMESPACE
-          kubectl wait --for=condition=available --timeout=1000s deployment/redis-cart
-          kubectl wait --for=condition=available --timeout=1000s deployment/adservice
-          kubectl wait --for=condition=available --timeout=1000s deployment/cartservice
-          kubectl wait --for=condition=available --timeout=1000s deployment/checkoutservice
-          kubectl wait --for=condition=available --timeout=1000s deployment/currencyservice
-          kubectl wait --for=condition=available --timeout=1000s deployment/emailservice
-          kubectl wait --for=condition=available --timeout=1000s deployment/frontend
-          kubectl wait --for=condition=available --timeout=1000s deployment/loadgenerator
-          kubectl wait --for=condition=available --timeout=1000s deployment/paymentservice
-          kubectl wait --for=condition=available --timeout=1000s deployment/productcatalogservice
-          kubectl wait --for=condition=available --timeout=1000s deployment/recommendationservice
-          kubectl wait --for=condition=available --timeout=1000s deployment/shippingservice
+          for DEPLOYMENT in redis-cart adservice cartservice checkoutservice currencyservice emailservice frontend loadgenerator paymentservice productcatalogservice recommendationservice shippingservice; do
+            kubectl wait --for=condition=available --timeout=1000s deployment/$DEPLOYMENT
+          done
 
       - name: Query EXTERNAL_IP for staging
         timeout-minutes: 5
         run: |
           set -x
-          NAMESPACE="pr${PR_NUMBER}"
+          NAMESPACE="pr${{ github.event.pull_request.number }}"
           echo "NAMESPACE=${NAMESPACE}" >> $GITHUB_ENV
           get_externalIP() {
             kubectl get service frontend-external --namespace $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
@@ -141,22 +130,20 @@ jobs:
           done
           EXTERNAL_IP=$(get_externalIP)
           echo "EXTERNAL_IP=${EXTERNAL_IP}" >> $GITHUB_ENV
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
 
       - name: Smoke Test
         timeout-minutes: 5
         run: |
           set -x
-          # start fresh loadgenerator pod
+          # Start fresh loadgenerator pod
           kubectl delete pod -l app=loadgenerator
-          # wait for requests to come in
+          # Wait for requests to come in
           REQUEST_COUNT="0"
           while [[ "$REQUEST_COUNT" -lt "50" ]]; do
             sleep 5
             REQUEST_COUNT=$(kubectl logs -l app=loadgenerator | grep Aggregated | awk '{print $2}')
           done
-          # ensure there are no errors hitting endpoints
+          # Ensure there are no errors hitting endpoints
           ERROR_COUNT=$(kubectl logs -l app=loadgenerator | grep Aggregated | awk '{print $3}' | sed "s/[(][^)]*[)]//g")
           if [[ "$ERROR_COUNT" -gt "0" ]]; then
             exit 1
