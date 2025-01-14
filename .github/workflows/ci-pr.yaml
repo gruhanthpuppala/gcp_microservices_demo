@@ -95,9 +95,9 @@ jobs:
           skaffold run --default-repo=us-docker.pkg.dev/$PROJECT_ID/pr-images --tag=${PR_NUMBER}-${{ github.sha }} --namespace=$NAMESPACE -p network-policies
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          PROJECT_ID: $PROJECT_ID
-          PR_CLUSTER: $PR_CLUSTER
-          REGION: $REGION
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          PR_CLUSTER: ${{ secrets.PR_CLUSTER }}
+          REGION: ${{ secrets.REGION }}
 
       - name: Wait For Pods
         timeout-minutes: 20
