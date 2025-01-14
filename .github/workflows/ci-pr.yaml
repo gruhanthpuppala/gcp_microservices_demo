@@ -80,7 +80,7 @@ jobs:
         timeout-minutes: 20
         run: |
           NAMESPACE="pr${PR_NUMBER}"
-          echo "::set-env name=NAMESPACE::$NAMESPACE"
+          echo "NAMESPACE=${NAMESPACE}" >> $GITHUB_ENV
 
           yes | gcloud auth configure-docker us-docker.pkg.dev
           gcloud container clusters get-credentials $PR_CLUSTER --region $REGION --project $PROJECT_ID
@@ -122,6 +122,7 @@ jobs:
         run: |
           set -x
           NAMESPACE="pr${PR_NUMBER}"
+          echo "NAMESPACE=${NAMESPACE}" >> $GITHUB_ENV
           get_externalIP() {
             kubectl get service frontend-external --namespace $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
           }
@@ -130,7 +131,7 @@ jobs:
             sleep 3
           done
           EXTERNAL_IP=$(get_externalIP)
-          echo "::set-env name=EXTERNAL_IP::$EXTERNAL_IP"
+          echo "EXTERNAL_IP=${EXTERNAL_IP}" >> $GITHUB_ENV
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
 
