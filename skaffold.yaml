@@ -18,29 +18,29 @@ metadata:
   name: app
 build:
   artifacts:
-    - image: us-docker.pkg.dev/online-boutique-ci/emailservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/emailservice
       context: src/emailservice
-    - image: us-docker.pkg.dev/online-boutique-ci/productcatalogservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/productcatalogservice
       context: src/productcatalogservice
-    - image: us-docker.pkg.dev/online-boutique-ci/recommendationservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/recommendationservice
       context: src/recommendationservice
-    - image: us-docker.pkg.dev/online-boutique-ci/shoppingassistantservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/shoppingassistantservice
       context: src/shoppingassistantservice
-    - image: us-docker.pkg.dev/online-boutique-ci/shippingservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/shippingservice
       context: src/shippingservice
-    - image: us-docker.pkg.dev/online-boutique-ci/checkoutservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/checkoutservice
       context: src/checkoutservice
-    - image: us-docker.pkg.dev/online-boutique-ci/paymentservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/paymentservice
       context: src/paymentservice
-    - image: us-docker.pkg.dev/online-boutique-ci/currencyservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/currencyservice
       context: src/currencyservice
-    - image: us-docker.pkg.dev/online-boutique-ci/cartservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/cartservice
       context: src/cartservice/src
       docker:
         dockerfile: Dockerfile
-    - image: us-docker.pkg.dev/online-boutique-ci/frontend
+    - image: us-docker.pkg.dev/boutique-ms-demo/frontend
       context: src/frontend
-    - image: us-docker.pkg.dev/online-boutique-ci/adservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/adservice
       context: src/adservice
   tagPolicy:
     envTemplate:
@@ -82,7 +82,7 @@ requires:
       - app
 build:
   artifacts:
-    - image: us-docker.pkg.dev/online-boutique-ci/loadgenerator
+    - image: us-docker.pkg.dev/boutique-ms-demo/loadgenerator
       context: src/loadgenerator
 manifests:
   rawYaml:

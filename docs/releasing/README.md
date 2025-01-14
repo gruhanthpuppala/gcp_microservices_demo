@@ -61,11 +61,11 @@ The release notes should contain a brief description of the changes since the pr
 
 Once the release notes are published, you should then replace the version of the production environment to the newly published version.
 
-1. Connect to the [online-boutique-release GKE cluster](https://pantheon.corp.google.com/kubernetes/clusters/details/us-central1-c/online-boutique-release/details?project=online-boutique-ci):
+1. Connect to the [online-boutique-release GKE cluster](https://pantheon.corp.google.com/kubernetes/clusters/details/us-central1-c/online-boutique-release/details?project=boutique-ms-demo):
 
    ```sh
    gcloud container clusters get-credentials online-boutique-release \
-     --zone us-central1-c --project online-boutique-ci
+     --zone us-central1-c --project boutique-ms-demo
    ```
 
 2. Deploy `release/kubernetes-manifests.yaml` to it:

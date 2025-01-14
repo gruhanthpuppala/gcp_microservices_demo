@@ -83,8 +83,8 @@ jobs:
         skaffold run --default-repo=us-docker.pkg.dev/$PROJECT_ID/$GITHUB_REF --tag=$GITHUB_SHA --namespace=$NAMESPACE -p network-policies
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-        PROJECT_ID: "online-boutique-ci"
-        PR_CLUSTER: "prs-gke-cluster"
+        PROJECT_ID: "boutique-ms-demo"
+        PR_CLUSTER: "boutiqe-cluster"
         REGION: "us-central1"
     - name: Wait For Pods
       timeout-minutes: 20
