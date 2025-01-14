@@ -17,34 +17,34 @@ kind: Config
 metadata:
   name: app
 build:
+  default-repo: us-docker.pkg.dev/${PROJECT_ID}/pr-images
   artifacts:
-    - image: us-docker.pkg.dev/boutique-ms-demo/emailservice
+    - image: emailservice
       context: src/emailservice
-    - image: us-docker.pkg.dev/boutique-ms-demo/productcatalogservice
+    - image: productcatalogservice
       context: src/productcatalogservice
-    - image: us-docker.pkg.dev/boutique-ms-demo/recommendationservice
+    - image: recommendationservice
       context: src/recommendationservice
-    - image: us-docker.pkg.dev/boutique-ms-demo/shoppingassistantservice
+    - image: shoppingassistantservice
       context: src/shoppingassistantservice
-    - image: us-docker.pkg.dev/boutique-ms-demo/shippingservice
+    - image: shippingservice
       context: src/shippingservice
-    - image: us-docker.pkg.dev/boutique-ms-demo/checkoutservice
+    - image: checkoutservice
       context: src/checkoutservice
-    - image: us-docker.pkg.dev/boutique-ms-demo/paymentservice
+    - image: paymentservice
       context: src/paymentservice
-    - image: us-docker.pkg.dev/boutique-ms-demo/currencyservice
+    - image: currencyservice
       context: src/currencyservice
-    - image: us-docker.pkg.dev/boutique-ms-demo/cartservice
+    - image: cartservice
       context: src/cartservice/src
       docker:
         dockerfile: Dockerfile
-    - image: us-docker.pkg.dev/boutique-ms-demo/frontend
+    - image: frontend
       context: src/frontend
-    - image: us-docker.pkg.dev/boutique-ms-demo/adservice
+    - image: adservice
       context: src/adservice
   tagPolicy:
-    envTemplate:
-      template: "{{.IMAGE_NAME}}:{{.GIT_COMMIT}}"
+    gitCommit: {}
   local:
     useBuildkit: false
 manifests:
@@ -65,7 +65,7 @@ profiles:
       - command: debug
     patches:
       - op: replace
-        path: /build/artifacts/7/docker/dockerfile
+        path: /build/artifacts/8/docker/dockerfile
         value: Dockerfile.debug
   - name: network-policies
     patches:
@@ -82,7 +82,7 @@ requires:
       - app
 build:
   artifacts:
-    - image: us-docker.pkg.dev/boutique-ms-demo/loadgenerator
+    - image: loadgenerator
       context: src/loadgenerator
 manifests:
   rawYaml:

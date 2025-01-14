@@ -79,25 +79,34 @@ jobs:
       - name: Build + Deploy PR images to GKE
         timeout-minutes: 20
         run: |
+          # Set Namespace
           NAMESPACE="pr${PR_NUMBER}"
           echo "NAMESPACE=${NAMESPACE}" >> $GITHUB_ENV
 
-          yes | gcloud auth configure-docker us-docker.pkg.dev
+          # Authenticate with Docker Registry
+          echo "Authenticating with Docker Registry..."
+          yes | gcloud auth configure-docker us-docker.pkg.dev > /dev/null
+
+          # Authenticate and Get Cluster Credentials
+          echo "Authenticating and getting cluster credentials..."
           gcloud container clusters get-credentials $PR_CLUSTER --region $REGION --project $PROJECT_ID
-          cat <<EOF | kubectl apply -f -
-          apiVersion: v1
-          kind: Namespace
-          metadata:
-            name: $NAMESPACE
-          EOF
-          echo "Deploying application"
-          skaffold config set --global local-cluster false
-          skaffold run --default-repo=us-docker.pkg.dev/$PROJECT_ID/pr-images --tag=${PR_NUMBER}-${{ github.sha }} --namespace=$NAMESPACE -p network-policies
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
-          PR_CLUSTER: ${{ secrets.PR_CLUSTER }}
-          REGION: ${{ secrets.REGION }}
+
+          # Create Namespace if Not Exists
+          kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
+
+          # Deploy Application
+          echo "Deploying application using Skaffold..."
+          skaffold run --default-repo=us-docker.pkg.dev/${PROJECT_ID}/pr-images \
+            --tag=${PR_NUMBER}-${{ github.sha }} \
+            --namespace=$NAMESPACE \
+            -p network-policies
+            
+  env:
+    PR_NUMBER: ${{ github.event.pull_request.number }}
+    PROJECT_ID: ${{ secrets.PROJECT_ID }}
+    PR_CLUSTER: ${{ secrets.PR_CLUSTER }}
+    REGION: ${{ secrets.REGION }}
+
 
       - name: Wait For Pods
         timeout-minutes: 20
