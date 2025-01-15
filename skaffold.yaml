@@ -17,7 +17,6 @@ kind: Config
 metadata:
   name: app
 build:
-  default-repo: us-docker.pkg.dev/boutique-ms-demo/pr-images
   artifacts:
     - image: emailservice
       context: src/emailservice
