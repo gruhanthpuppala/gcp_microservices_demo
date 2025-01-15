@@ -46,6 +46,7 @@ build:
     gitCommit: {}
   local:
     useBuildkit: false
+    default-repo: us-docker.pkg.dev/boutique-ms-demo/pr-images
 manifests:
   kustomize:
     paths:
