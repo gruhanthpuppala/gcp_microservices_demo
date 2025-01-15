@@ -16,8 +16,8 @@ apiVersion: skaffold/v3
 kind: Config
 metadata:
   name: app
+default-repo: us-docker.pkg.dev/boutique-ms-demo/pr-images
 build:
-  default-repo: us-docker.pkg.dev/boutique-ms-demo/pr-images
   artifacts:
     - image: emailservice
       context: src/emailservice
