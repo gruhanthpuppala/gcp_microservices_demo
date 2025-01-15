@@ -16,32 +16,31 @@ apiVersion: skaffold/v3
 kind: Config
 metadata:
   name: app
-default-repo: us-docker.pkg.dev/boutique-ms-demo/pr-images
 build:
   artifacts:
     - image: emailservice
       context: src/emailservice
-    - image: productcatalogservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/pr-images/productcatalogservice
       context: src/productcatalogservice
-    - image: recommendationservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/pr-images/recommendationservice
       context: src/recommendationservice
-    - image: shoppingassistantservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/pr-images/shoppingassistantservice
       context: src/shoppingassistantservice
-    - image: shippingservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/pr-images/shippingservice
       context: src/shippingservice
-    - image: checkoutservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/pr-images/checkoutservice
       context: src/checkoutservice
-    - image: paymentservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/pr-images/paymentservice
       context: src/paymentservice
-    - image: currencyservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/pr-images/currencyservice
       context: src/currencyservice
-    - image: cartservice
+    - image: us-docker.pkg.dev/boutique-ms-demo/pr-images/cartservice
       context: src/cartservice/src
       docker:
         dockerfile: Dockerfile
-    - image: frontend
+    - image: us-docker.pkg.dev/boutique-ms-demo/pr-images/frontend
       context: src/frontend
-    - image: adservice
+    - image: aus-docker.pkg.dev/boutique-ms-demo/pr-images/dservice
       context: src/adservice
   tagPolicy:
     gitCommit: {}
@@ -82,7 +81,7 @@ requires:
       - app
 build:
   artifacts:
-    - image: loadgenerator
+    - image: us-docker.pkg.dev/boutique-ms-demo/pr-images/loadgenerator
       context: src/loadgenerator
 manifests:
   rawYaml:
