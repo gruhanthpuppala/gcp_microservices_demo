@@ -56,7 +56,6 @@ profiles:
   - name: gcb
     build:
       googleCloudBuild:
-        default-repo: us-docker.pkg.dev/${PROJECT_ID}/pr-images
         diskSizeGb: 300
         machineType: N1_HIGHCPU_32
         timeout: 4000s
