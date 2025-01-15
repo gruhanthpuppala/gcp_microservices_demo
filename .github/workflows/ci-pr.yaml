@@ -137,7 +137,7 @@ jobs:
         run: |
           set -x  # Enable debugging
           kubectl config set-context --current --namespace=$NAMESPACE
-          for DEPLOYMENT in redis-cart adservice cartservice checkoutservice currencyservice emailservice frontend loadgenerator paymentservice productcatalogservice recommendationservice shippingservice; do
+          for DEPLOYMENT in redis-cart adservice cartservice checkoutservice currencyservice emailservice frontend paymentservice productcatalogservice recommendationservice shippingservice; do
             echo "DEBUG: Waiting for deployment ${DEPLOYMENT} to be ready"
             kubectl wait --for=condition=available --timeout=1000s deployment/$DEPLOYMENT
             if [[ $? -ne 0 ]]; then
