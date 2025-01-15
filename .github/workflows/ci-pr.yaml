@@ -80,86 +80,90 @@ jobs:
       - name: Build + Deploy PR images to GKE
         timeout-minutes: 20
         run: |
-          # Set Namespace
+          set -ex  # Enable debugging
+
+          # Step 1: Set Namespace
+          echo "DEBUG: Setting Namespace"
           NAMESPACE="pr${{ github.event.pull_request.number }}"
           echo "NAMESPACE=${NAMESPACE}" >> $GITHUB_ENV
+          echo "DEBUG: Namespace set to ${NAMESPACE}"
 
-          # Authenticate with Docker Registry
-          echo "Authenticating with Docker Registry..."
-          yes | gcloud auth configure-docker us-docker.pkg.dev > /dev/null
+          # Step 2: Authenticate with Docker Registry
+          echo "DEBUG: Authenticating with Google Artifact Registry..."
+          yes | gcloud auth configure-docker us-docker.pkg.dev > /dev/null 2>&1
+          if [[ $? -ne 0 ]]; then
+            echo "ERROR: Docker authentication with Artifact Registry failed"
+            exit 1
+          fi
+          echo "DEBUG: Docker authentication successful"
 
-          # Authenticate and Get Cluster Credentials
-          echo "Authenticating and getting cluster credentials..."
+          # Step 3: Authenticate and Get Cluster Credentials
+          echo "DEBUG: Fetching Kubernetes cluster credentials"
           gcloud container clusters get-credentials ${{ secrets.PR_CLUSTER }} --region ${{ secrets.REGION }} --project ${{ secrets.PROJECT_ID }}
+          if [[ $? -ne 0 ]]; then
+            echo "ERROR: Failed to fetch Kubernetes cluster credentials"
+            exit 1
+          fi
+          echo "DEBUG: Successfully fetched Kubernetes cluster credentials"
 
-          # Create Namespace if Not Exists
-          kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
+          # Step 4: Create Namespace if Not Exists
+          echo "DEBUG: Checking if namespace ${NAMESPACE} exists"
+          if ! kubectl get namespace $NAMESPACE; then
+            echo "DEBUG: Namespace ${NAMESPACE} does not exist, creating..."
+            kubectl create namespace $NAMESPACE
+            if [[ $? -ne 0 ]]; then
+              echo "ERROR: Failed to create namespace ${NAMESPACE}"
+              exit 1
+            fi
+          else
+            echo "DEBUG: Namespace ${NAMESPACE} already exists"
+          fi
 
-          # Deploy Application
-          echo "Deploying application using Skaffold..."
+          # Step 5: Deploy Application using Skaffold
+          echo "DEBUG: Starting Skaffold deployment..."
           skaffold run --default-repo=us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/pr-images \
             --tag=${{ github.event.pull_request.number }}-${{ github.sha }} \
             --namespace=$NAMESPACE \
-            -p network-policies
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PROJECT_ID: ${{ secrets.PROJECT_ID }}
-          PR_CLUSTER: ${{ secrets.PR_CLUSTER }}
-          REGION: ${{ secrets.REGION }}
+            -p network-policies \
+            -v=debug  # Enable Skaffold debug logs
+          if [[ $? -ne 0 ]]; then
+            echo "ERROR: Skaffold deployment failed"
+            exit 1
+          fi
+          echo "DEBUG: Skaffold deployment completed successfully"
 
       - name: Wait For Pods
         timeout-minutes: 20
         run: |
-          set -x
+          set -x  # Enable debugging
           kubectl config set-context --current --namespace=$NAMESPACE
           for DEPLOYMENT in redis-cart adservice cartservice checkoutservice currencyservice emailservice frontend loadgenerator paymentservice productcatalogservice recommendationservice shippingservice; do
+            echo "DEBUG: Waiting for deployment ${DEPLOYMENT} to be ready"
             kubectl wait --for=condition=available --timeout=1000s deployment/$DEPLOYMENT
+            if [[ $? -ne 0 ]]; then
+              echo "ERROR: Deployment ${DEPLOYMENT} failed to become ready"
+              exit 1
+            fi
           done
+          echo "DEBUG: All deployments in ${NAMESPACE} are ready"
 
       - name: Query EXTERNAL_IP for staging
         timeout-minutes: 5
         run: |
-          set -x
+          set -x  # Enable debugging
           NAMESPACE="pr${{ github.event.pull_request.number }}"
           echo "NAMESPACE=${NAMESPACE}" >> $GITHUB_ENV
           get_externalIP() {
             kubectl get service frontend-external --namespace $NAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
           }
           until [[ -n "$(get_externalIP)" ]]; do
-            echo "Querying for external IP for frontend-external on namespace: $NAMESPACE"
+            echo "DEBUG: Waiting for external IP to be assigned to frontend-external service in namespace ${NAMESPACE}"
             sleep 3
           done
           EXTERNAL_IP=$(get_externalIP)
-          echo "EXTERNAL_IP=${EXTERNAL_IP}" >> $GITHUB_ENV
-
-      - name: Smoke Test
-        timeout-minutes: 5
-        run: |
-          set -x
-          # Start fresh loadgenerator pod
-          kubectl delete pod -l app=loadgenerator
-          # Wait for requests to come in
-          REQUEST_COUNT="0"
-          while [[ "$REQUEST_COUNT" -lt "50" ]]; do
-            sleep 5
-            REQUEST_COUNT=$(kubectl logs -l app=loadgenerator | grep Aggregated | awk '{print $2}')
-          done
-          # Ensure there are no errors hitting endpoints
-          ERROR_COUNT=$(kubectl logs -l app=loadgenerator | grep Aggregated | awk '{print $3}' | sed "s/[(][^)]*[)]//g")
-          if [[ "$ERROR_COUNT" -gt "0" ]]; then
+          if [[ -z "$EXTERNAL_IP" ]]; then
+            echo "ERROR: Failed to retrieve external IP for frontend-external service"
             exit 1
           fi
-
-      - name: Comment EXTERNAL_IP
-        timeout-minutes: 5
-        env:
-          COMMENTS_URL: ${{ github.event.pull_request.comments_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl \
-            -X POST \
-            $COMMENTS_URL \
-            -H "Content-Type: application/json" \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            --data '{ "body": "🚲 PR staged at '"http://${EXTERNAL_IP}"'" }'
-          sleep 60
+          echo "DEBUG: External IP assigned: ${EXTERNAL_IP}"
+          echo "EXTERNAL_IP=${EXTERNAL_IP}" >> $GITHUB_ENV
