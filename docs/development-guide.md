@@ -54,7 +54,7 @@ This doc explains how to build and run the Online Boutique source code locally u
     gcloud auth configure-docker -q 
     ```
 
-3.  In the root of this repository, run `skaffold run --default-repo=us-docker.pkg.dev/[PROJECT_ID]/microservices-demo`,
+3.  In the root of this repository, run `skaffold run --default-repo=us-central1-docker.pkg.dev/[PROJECT_ID]/microservices-demo`,
     where [PROJECT_ID] is your GCP project ID.
 
     This command:
@@ -68,7 +68,7 @@ This doc explains how to build and run the Online Boutique source code locally u
     Cloud Shell, you can build the images on Google Cloud Build: [Enable the
     Cloud Build
     API](https://console.cloud.google.com/flows/enableapi?apiid=cloudbuild.googleapis.com),
-    then run `skaffold run -p gcb --default-repo=us-docker.pkg.dev/[PROJECT_ID]/microservices-demo` instead.
+    then run `skaffold run -p gcb --default-repo=us-central1-docker.pkg.dev/[PROJECT_ID]/microservices-demo` instead.
 
 4.  Find the IP address of your application, then visit the application on your
     browser to confirm installation.

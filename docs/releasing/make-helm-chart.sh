@@ -23,7 +23,7 @@ REPO_ROOT=$SCRIPT_DIR/../..
 log() { echo "$1" >&2; }
 
 TAG="${TAG:?TAG env variable must be specified}"
-HELM_CHART_REPO="us-docker.pkg.dev/boutique-ms-demo/charts"
+HELM_CHART_REPO="us-central1-docker.pkg.dev/boutique-ms-demo/charts"
 
 cd ${REPO_ROOT}/helm-chart
 gsed -i "s/^appVersion:.*/appVersion: \"${TAG}\"/" Chart.yaml

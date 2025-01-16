@@ -90,7 +90,7 @@ jobs:
 
           # Step 2: Authenticate with Docker Registry
           echo "DEBUG: Authenticating with Google Artifact Registry..."
-          yes | gcloud auth configure-docker us-docker.pkg.dev > /dev/null 2>&1
+          yes | gcloud auth configure-docker us-central1-docker.pkg.dev > /dev/null 2>&1
           if [[ $? -ne 0 ]]; then
             echo "ERROR: Docker authentication with Artifact Registry failed"
             exit 1
@@ -121,7 +121,7 @@ jobs:
 
           # Step 5: Deploy Application using Skaffold
           echo "DEBUG: Starting Skaffold deployment..."
-          skaffold run --default-repo=us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/pr-images \
+          skaffold run --default-repo=us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/pr-images \
             --tag=${{ github.event.pull_request.number }}-${{ github.sha }} \
             --namespace=$NAMESPACE \
             -p network-policies \
