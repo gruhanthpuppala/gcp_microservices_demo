@@ -41,7 +41,7 @@ build:
         dockerfile: Dockerfile
     - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/frontend
       context: src/frontend
-    - image: aus-central1-docker.pkg.dev/boutique-ms-demo/pr-images/dservice
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/adservice
       context: src/adservice
   tagPolicy:
     gitCommit: {}
