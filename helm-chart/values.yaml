@@ -17,7 +17,7 @@
 # Declare variables to be passed into your templates.
 
 images:
-  repository: us-central1-docker.pkg.dev/google-samples/microservices-demo
+  repository: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
@@ -45,7 +45,7 @@ opentelemetryCollector:
   create: false
   name: opentelemetrycollector
   # Specifies the project id for the otel collector. If set as "PROJECT_ID" (default value), an initContainer will automatically retrieve the project id value from the metadata server.
-  projectId: "PROJECT_ID"
+  projectId: "boutique-ms-demo"
 
 googleCloudOperations:
   profiler: false
@@ -64,8 +64,8 @@ adService:
   name: adservice
   resources:
     requests:
-      cpu: 200m
-      memory: 180Mi
+      cpu: 250m
+      memory: 300Mi
     limits:
       cpu: 300m
       memory: 300Mi
@@ -75,10 +75,10 @@ cartService:
   name: cartservice
   resources:
     requests:
-      cpu: 200m
-      memory: 64Mi
+      cpu: 125m
+      memory: 70Mi
     limits:
-      cpu: 300m
+      cpu: 250m
       memory: 128Mi
 
 checkoutService:
@@ -86,11 +86,11 @@ checkoutService:
   name: checkoutservice
   resources:
     requests:
-      cpu: 100m
-      memory: 64Mi
+      cpu: 150m
+      memory: 220Mi
     limits:
       cpu: 200m
-      memory: 128Mi
+      memory: 450Mi
 
 currencyService:
   create: true
@@ -120,7 +120,7 @@ frontend:
   externalService: true
   cymbalBranding: false
   # One of: local, gcp, aws, azure, onprem, alibaba. When not set, defaults to "local" unless running in GKE, otherwise auto-sets to gcp.
-  platform: local
+  platform: gcp
   singleSharedSession: false
   virtualService:
     create: false
@@ -133,10 +133,10 @@ frontend:
       labelValue: ingressgateway
   resources:
     requests:
-      cpu: 100m
+      cpu: 150m
       memory: 64Mi
     limits:
-      cpu: 200m
+      cpu: 250m
       memory: 128Mi
 
 loadGenerator:
@@ -169,10 +169,10 @@ productCatalogService:
   extraLatency: ""
   resources:
     requests:
-      cpu: 100m
+      cpu: 150m
       memory: 64Mi
     limits:
-      cpu: 200m
+      cpu: 250m
       memory: 128Mi
 
 recommendationService:

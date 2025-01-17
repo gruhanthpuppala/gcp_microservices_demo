@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
 apiVersion: skaffold/v3
 kind: Config
@@ -18,34 +19,30 @@ metadata:
   name: app
 build:
   artifacts:
-  # image tags are relative; to specify an image repo (e.g. GCR), you
-  # must provide a "default repo" using one of the methods described
-  # here:
-  # https://skaffold.dev/docs/concepts/#image-repository-handling
-  - image: emailservice
-    context: src/emailservice
-  - image: productcatalogservice
-    context: src/productcatalogservice
-  - image: recommendationservice
-    context: src/recommendationservice
-  - image: shoppingassistantservice
-    context: src/shoppingassistantservice
-  - image: shippingservice
-    context: src/shippingservice
-  - image: checkoutservice
-    context: src/checkoutservice
-  - image: paymentservice
-    context: src/paymentservice
-  - image: currencyservice
-    context: src/currencyservice
-  - image: cartservice
-    context: src/cartservice/src
-    docker:
-      dockerfile: Dockerfile
-  - image: frontend
-    context: src/frontend
-  - image: adservice
-    context: src/adservice
+    - image: emailservice
+      context: src/emailservice
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/productcatalogservice
+      context: src/productcatalogservice
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/recommendationservice
+      context: src/recommendationservice
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/shoppingassistantservice
+      context: src/shoppingassistantservice
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/shippingservice
+      context: src/shippingservice
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/checkoutservice
+      context: src/checkoutservice
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/paymentservice
+      context: src/paymentservice
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/currencyservice
+      context: src/currencyservice
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/cartservice
+      context: src/cartservice/src
+      docker:
+        dockerfile: Dockerfile
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/frontend
+      context: src/frontend
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/adservice
+      context: src/adservice
   tagPolicy:
     gitCommit: {}
   local:
@@ -53,64 +50,49 @@ build:
 manifests:
   kustomize:
     paths:
-    - kubernetes-manifests
+      - kubernetes-manifests
 deploy:
   kubectl: {}
-# "gcb" profile allows building and pushing the images
-# on Google Container Builder without requiring docker
-# installed on the developer machine. However, note that
-# since GCB does not cache the builds, each build will
-# start from scratch and therefore take a long time.
-#
-# This is not used by default. To use it, run:
-#     skaffold run -p gcb
 profiles:
-- name: gcb
-  build:
-    googleCloudBuild:
-      diskSizeGb: 300
-      machineType: N1_HIGHCPU_32
-      timeout: 4000s
-# "debug" profile replaces the default Dockerfile in cartservice with Dockerfile.debug,
-# which enables debugging via skaffold.
-#
-# This profile is used by default when running skaffold debug.
-- name: debug
-  activation:
-  - command: debug
-  patches:
-  - op: replace
-    path: /build/artifacts/7/docker/dockerfile
-    value: Dockerfile.debug
-# The "network-policies" profile is not used by default.
-# You can use it in isolation or in combination with other profiles:
-#     skaffold run -p network-policies, debug
-- name: network-policies
-  patches:
-  - op: add
-    path: /manifests/kustomize/paths/1
-    value: kustomize/components/network-policies
+  - name: gcb
+    build:
+      googleCloudBuild:
+        diskSizeGb: 300
+        machineType: N1_HIGHCPU_32
+        timeout: 4000s
+  - name: debug
+    activation:
+      - command: debug
+    patches:
+      - op: replace
+        path: /build/artifacts/8/docker/dockerfile
+        value: Dockerfile.debug
+  - name: network-policies
+    patches:
+      - op: add
+        path: /manifests/kustomize/paths/1
+        value: kustomize/components/network-policies
 ---
 apiVersion: skaffold/v3
 kind: Config
 metadata:
   name: loadgenerator
 requires:
-- configs:
-  - app
+  - configs:
+      - app
 build:
   artifacts:
-  - image: loadgenerator
-    context: src/loadgenerator
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images/loadgenerator
+      context: src/loadgenerator
 manifests:
   rawYaml:
-  - ./kubernetes-manifests/loadgenerator.yaml
+    - ./kubernetes-manifests/loadgenerator.yaml
 deploy:
   kubectl: {}
 profiles:
-- name: gcb
-  build:
-    googleCloudBuild:
-      diskSizeGb: 300
-      machineType: N1_HIGHCPU_32
-      timeout: 4000s
+  - name: gcb
+    build:
+      googleCloudBuild:
+        diskSizeGb: 300
+        machineType: N1_HIGHCPU_32
+        timeout: 4000s

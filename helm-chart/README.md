@@ -6,16 +6,16 @@ If you'd like to deploy Online Boutique via its Helm chart, you could leverage t
 
 Deploy the default setup of Online Boutique:
 ```sh
-helm upgrade onlineboutique oci://us-docker.pkg.dev/online-boutique-ci/charts/onlineboutique \
+helm upgrade onlineboutique oci://us-central1-docker.pkg.dev/boutique-ms-demo/charts/onlineboutique \
     --install
 ```
 
 Deploy advanced scenario of Online Boutique:
 ```sh
-helm upgrade onlineboutique oci://us-docker.pkg.dev/online-boutique-ci/charts/onlineboutique \
+helm upgrade onlineboutique oci://us-central1-docker.pkg.dev/boutique-ms-demo/charts/onlineboutique \
     --install \
     --create-namespace \
-    --set images.repository=us-docker.pkg.dev/my-project/microservices-demo \
+    --set images.repository=us-central1-docker.pkg.dev/my-project/microservices-demo \
     --set frontend.externalService=false \
     --set redis.create=false \
     --set cartservice.database.type=spanner \
