@@ -8,25 +8,24 @@ jobs:
   install-dependencies:
     runs-on: boutique-runner # Uses your specific self-hosted runner
     steps:
-# Step 1: Checkout the repository
+      # Step 1: Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
           repository: gruhanthpuppala/gcp_microservices_demo # Your GitHub repository
           ref: develop-branch # The branch containing the script
 
-# Step 2: Navigate to the script's directory and run it
+      # Step 2: Navigate to the script's directory and run it
       - name: Install Dependencies
         run: |
           echo "Navigating to the directory containing the script..."
-          cd .github/workflows 
-# Navigated to the correct path
+          cd .github/workflows # Navigate to the correct path
           
           echo "Running install-dependencies.sh..."
           chmod +x install-dependencies.sh
           ./install-dependencies.sh
 
-# Step 3: Create Marker File (Optional)
+      # Step 3: Create Marker File (Optional)
       - name: Create Marker File
         run: |
           touch /tmp/dependencies_installed.marker
