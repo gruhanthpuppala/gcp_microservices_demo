@@ -18,26 +18,26 @@ set -euo pipefail
 # Update system and install basic tools
 sudo apt update && sudo apt install -y wget apt-transport-https gpg curl software-properties-common build-essential
 
-# Install .NET SDK 8.0 (Compatible with Ubuntu 20.04)
-wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+# Install .NET SDK 9.0 (Compatible with Ubuntu 22.04)
+wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 sudo dpkg -i packages-microsoft-prod.deb
 sudo apt update
-sudo apt install -y dotnet-sdk-8.0
+sudo apt install -y dotnet-sdk-9.0
 rm packages-microsoft-prod.deb
-echo "✅ .NET SDK 8.0 installed"
+echo "✅ .NET SDK 9.0 installed"
 
 # Install kubectl
 sudo apt update && sudo apt install -y apt-transport-https
-curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/kubernetes-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 sudo apt update
 sudo apt install -y kubectl
 echo "✅ kubectl installed"
 
 # Install Go (GoLang)
-wget https://golang.org/dl/go1.19.10.linux-amd64.tar.gz
-sudo tar -C /usr/local -xzf go1.19.10.linux-amd64.tar.gz
-rm go1.19.10.linux-amd64.tar.gz
+wget https://golang.org/dl/go1.20.6.linux-amd64.tar.gz
+sudo tar -C /usr/local -xzf go1.20.6.linux-amd64.tar.gz
+rm go1.20.6.linux-amd64.tar.gz
 echo 'export GOPATH=$HOME/go' >> ~/.profile
 echo 'export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin' >> ~/.profile
 source ~/.profile
@@ -61,7 +61,6 @@ else
   echo "❌ Skaffold installation failed"
 fi
 
-
 # Install Docker
 sudo apt update
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
@@ -76,6 +75,6 @@ else
   echo "❌ Docker installation failed"
 fi
 
-# Reboot the system to apply Docker group changes (if needed)
-echo "Rebooting the system to apply Docker changes..."
-sudo reboot
+# Print Completion Message
+echo "All dependencies have been installed successfully!"
+
