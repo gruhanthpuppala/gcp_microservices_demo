@@ -1,4 +1,4 @@
-name: Dependencies
+name: Dependencies check
 
 on:
   workflow_dispatch:
