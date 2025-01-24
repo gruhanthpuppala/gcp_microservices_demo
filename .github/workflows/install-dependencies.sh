@@ -27,14 +27,14 @@ rm packages-microsoft-prod.deb
 echo "✅ .NET SDK 9.0 installed"
 
 # Install kubectl
-# Remove old Kubernetes repository if it exists
-sudo rm -f /etc/apt/sources.list.d/kubernetes.list
-sudo apt update && sudo apt install -y apt-transport-https
+# Install kubectl
+sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
 sudo curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/kubernetes-archive-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-jammy main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-sudo apt update
-sudo apt install -y kubectl
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y kubectl
 echo "✅ kubectl installed"
+
 
 # Install Go (GoLang)
 wget https://golang.org/dl/go1.20.6.linux-amd64.tar.gz
