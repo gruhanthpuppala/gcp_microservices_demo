@@ -67,7 +67,7 @@ Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
 
    ```sh
    export PROJECT_ID=<PROJECT_ID>
-   export REGION=us-central1
+   export REGION=us-central1-a
    gcloud services enable container.googleapis.com \
      --project=${PROJECT_ID}
    ```

@@ -23,7 +23,7 @@ PROJECT_NUMBER=$PROJECT_NUMBER
 PGPASSWORD=$PGPASSWORD
 
 # Set sensible defaults
-REGION=us-central1
+REGION=us-central1-a
 USE_GKE_GCLOUD_AUTH_PLUGIN=True
 ALLOYDB_NETWORK=default
 ALLOYDB_SERVICE_NAME=onlineboutique-network-range

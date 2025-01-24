@@ -26,7 +26,7 @@ variable "name" {
 variable "region" {
   type        = string
   description = "Region of the new GKE cluster"
-  default     = "us-central1"
+  default     = "us-central1-a"
 }
 
 variable "namespace" {

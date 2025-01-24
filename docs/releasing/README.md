@@ -17,7 +17,7 @@ This document walks through the process of creating a new release of Online Bout
 
    ```sh
    gcloud auth login
-   gcloud auth configure-docker us-central1-docker.pkg.dev
+   gcloud auth configure-docker us-central1-a-docker.pkg.dev
    ```
 
 ## Create and tag the new release
@@ -27,7 +27,7 @@ Run the `make-release.sh` script found inside the `docs/releasing/` directory:
 ```sh
 # assuming you are inside the root path of the bank-of-anthos repository
 export TAG=vX.Y.Z # This is the new version (e.g. `v0.3.5`)
-export REPO_PREFIX=us-central1-docker.pkg.dev/google-samples/microservices-demo # This is the Docker repository for tagged images
+export REPO_PREFIX=us-central1-a-docker.pkg.dev/google-samples/microservices-demo # This is the Docker repository for tagged images
 export PROJECT_ID=google-samples # This is the Google Cloud project for the release CI
 ./docs/releasing/make-release.sh
 ```
@@ -61,11 +61,11 @@ The release notes should contain a brief description of the changes since the pr
 
 Once the release notes are published, you should then replace the version of the production environment to the newly published version.
 
-1. Connect to the [online-boutique-release GKE cluster](https://pantheon.corp.google.com/kubernetes/clusters/details/us-central1-c/online-boutique-release/details?project=boutique-ms-demo):
+1. Connect to the [online-boutique-release GKE cluster](https://pantheon.corp.google.com/kubernetes/clusters/details/us-central1-a-c/online-boutique-release/details?project=boutique-ms-demo):
 
    ```sh
    gcloud container clusters get-credentials online-boutique-release \
-     --zone us-central1-c --project boutique-ms-demo
+     --zone us-central1-a-c --project boutique-ms-demo
    ```
 
 2. Deploy `release/kubernetes-manifests.yaml` to it:

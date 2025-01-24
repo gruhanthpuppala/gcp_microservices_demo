@@ -30,20 +30,20 @@ This demo adds a new service to Online Boutique called `shoppingassistantservice
 1. Create a GKE Autopilot cluster. This may take a few minutes.
     ```sh
     gcloud container clusters create-auto cymbal-shops \
-        --region=us-central1
+        --region=us-central1-a
     ```
 
 1. Change your Kubernetes context to your newly created GKE cluster.
     ```sh
     gcloud container clusters get-credentials cymbal-shops \
-        --region us-central1
+        --region us-central1-a
     ```
 
 1. Create an Artifact Registry container image repository.
     ```sh
     gcloud artifacts repositories create images \
         --repository-format=docker \
-        --location=us-central1
+        --location=us-central1-a
     ```
 
 1. Clone the `microservices-demo` repository locally.
@@ -62,7 +62,7 @@ This demo adds a new service to Online Boutique called `shoppingassistantservice
 1. Create a Linux VM in Compute Engine (GCE).
     ```sh
     gcloud compute instances create gce-linux \
-        --zone=us-central1-a \
+        --zone=us-central1-a-a \
         --machine-type=e2-micro \
         --image-family=debian-12 \
         --image-project=debian-cloud 
@@ -71,7 +71,7 @@ This demo adds a new service to Online Boutique called `shoppingassistantservice
 1. SSH into the VM. From here until we exit, all steps happen in the VM.
     ```sh
     gcloud compute ssh gce-linux \
-        --zone "us-central1-a"
+        --zone "us-central1-a-a"
     ```
 
 1. Install the Postgres client and set your default Google Cloud project.
@@ -135,7 +135,7 @@ This demo adds a new service to Online Boutique called `shoppingassistantservice
 
 1. Deploy to the GKE cluster.
     ```sh
-    skaffold run --default-repo=us-central1-docker.pkg.dev/$PROJECT_ID/images
+    skaffold run --default-repo=us-central1-a-docker.pkg.dev/$PROJECT_ID/images
     ```
 
 1. Wait for all the pods to be up and running. You can then find the external IP and navigate to it.

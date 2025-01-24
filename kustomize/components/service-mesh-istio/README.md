@@ -93,13 +93,13 @@ Cloud Service Mesh (CSM) provides a service mesh experience that includes a full
      mesh:
        management: MANAGEMENT_AUTOMATIC
    membershipSpecs:
-     projects/12345/locations/us-central1/memberships/online-boutique:
+     projects/12345/locations/us-central1-a/memberships/online-boutique:
        mesh:
          management: MANAGEMENT_AUTOMATIC
        origin:
          type: USER
    membershipStates:
-     projects/12345/locations/us-central1/memberships/online-boutique:
+     projects/12345/locations/us-central1-a/memberships/online-boutique:
        servicemesh:
          conditions:
          - code: VPCSC_GA_SUPPORTED
