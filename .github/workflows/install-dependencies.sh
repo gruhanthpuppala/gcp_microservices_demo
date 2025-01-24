@@ -29,11 +29,13 @@ echo "✅ .NET SDK 9.0 installed"
 # Install kubectl
 # Install kubectl
 sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
-sudo curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/kubernetes-archive-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
-sudo apt-get update
-sudo apt-get install -y kubectl
-echo "✅ kubectl installed"
+sudo snap install kubectl --classic
+kubectl version --client
+if command  kubectl version --client &> /dev/null; then
+  echo "✅ kubectl installed successfully"
+else
+  echo "❌ kubectl installation failed"
+fi
 
 
 # Install Go (GoLang)
