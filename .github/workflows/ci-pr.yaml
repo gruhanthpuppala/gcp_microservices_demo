@@ -33,7 +33,7 @@ concurrency:
 
 jobs:
   code-tests:
-    runs-on: boutique-runner
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
 
