@@ -33,7 +33,7 @@ concurrency:
 
 jobs:
   code-tests:
-    runs-on: [boutique-runner, github]
+    runs-on: boutique-runner
     steps:
       - uses: actions/checkout@v4
 
