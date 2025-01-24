@@ -72,7 +72,7 @@ jobs:
           dotnet test src/cartservice/
 
   deployment-tests:
-    runs-on: [self-hosted, is-enabled]
+    runs-on: self-hosted
     needs: code-tests
     strategy:
       matrix:
