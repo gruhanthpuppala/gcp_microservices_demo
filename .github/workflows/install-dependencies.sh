@@ -28,7 +28,6 @@ echo "✅ .NET SDK 9.0 installed"
 
 # Install kubectl
 # Install kubectl
-sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl
 sudo snap install kubectl --classic
 kubectl version --client
 if command  kubectl version --client &> /dev/null; then
