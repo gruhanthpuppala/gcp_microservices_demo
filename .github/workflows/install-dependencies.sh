@@ -36,14 +36,6 @@ else
   echo "❌ kubectl installation failed"
 fi
 
-echo "Installing gke-gcloud-auth-plugin..."
-sudo apt-get update && sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
-if command -v gcloud auth plugins list | grep -q "gke-gcloud-auth-plugin"; then
-  echo "✅ gke-gcloud-auth-plugin installed successfully"
-else
-  echo "❌ gke-gcloud-auth-plugin installation failed"
-  exit 1
-fi
 
 # Install Go (GoLang)
 wget https://golang.org/dl/go1.20.6.linux-amd64.tar.gz
