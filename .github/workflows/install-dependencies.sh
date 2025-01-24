@@ -36,6 +36,14 @@ else
   echo "❌ kubectl installation failed"
 fi
 
+echo "Installing gke-gcloud-auth-plugin..."
+sudo apt-get update && sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
+if command -v gcloud auth plugins list | grep -q "gke-gcloud-auth-plugin"; then
+  echo "✅ gke-gcloud-auth-plugin installed successfully"
+else
+  echo "❌ gke-gcloud-auth-plugin installation failed"
+  exit 1
+fi
 
 # Install Go (GoLang)
 wget https://golang.org/dl/go1.20.6.linux-amd64.tar.gz
@@ -67,7 +75,7 @@ fi
 # Install Docker
 sudo apt update
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor --batch --yes -o /usr/share/keyrings/docker-archive-keyring.gpg
 echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io
@@ -77,7 +85,6 @@ if command -v docker &> /dev/null; then
 else
   echo "❌ Docker installation failed"
 fi
-
 
 touch /tmp/dependencies_installed.marker
 echo "Marker file created to indicate successful installation of dependencies."
