@@ -27,6 +27,8 @@ rm packages-microsoft-prod.deb
 echo "✅ .NET SDK 9.0 installed"
 
 # Install kubectl
+# Remove old Kubernetes repository if it exists
+sudo rm -f /etc/apt/sources.list.d/kubernetes.list
 sudo apt update && sudo apt install -y apt-transport-https
 sudo curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/kubernetes-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-jammy main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
