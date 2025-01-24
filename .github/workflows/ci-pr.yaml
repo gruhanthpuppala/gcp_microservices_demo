@@ -11,9 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#------------------------------
+#-----------------------
 
 name: "Continuous Integration - Pull Request"
+on:
+  pull_request:
     branches:
       - main
     paths-ignore:
@@ -34,6 +36,19 @@ jobs:
     runs-on: [self-hosted, is-enabled]
     steps:
       - uses: actions/checkout@v4
+
+      # Check and Install Dependencies
+      - name: Check and Install Dependencies
+        run: |
+          if [ ! -f /tmp/dependencies_installed.marker ]; then
+            echo "Dependencies not found. Running install-dependencies.sh..."
+            cd .github/workflows
+            chmod +x install-dependencies.sh
+            ./install-dependencies.sh
+          else
+            echo "All dependencies are already installed."
+          fi
+
       - uses: actions/setup-dotnet@v4
         env:
           DOTNET_INSTALL_DIR: "./.dotnet"

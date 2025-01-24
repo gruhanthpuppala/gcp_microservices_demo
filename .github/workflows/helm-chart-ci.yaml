@@ -13,7 +13,10 @@
 # limitations under the License.
 
 name: helm-chart-ci
-
+on:
+  push:
+    branches:
+      - main
     paths:
       - 'helm-chart/**'
       - '.github/workflows/helm-chart-ci.yaml'

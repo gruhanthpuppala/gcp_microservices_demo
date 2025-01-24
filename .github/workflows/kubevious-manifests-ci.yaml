@@ -13,7 +13,10 @@
 # limitations under the License.
 
 name: kubevious-manifests-ci
-
+on:
+  push:
+    branches:
+      - main
     paths:
       - 'helm-chart/**'
       - 'kustomize/**'
