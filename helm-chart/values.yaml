@@ -17,7 +17,7 @@
 # Declare variables to be passed into your templates.
 
 images:
-  repository: us-central1-docker.pkg.dev/boutique-ms-demo/pr-images
+  repository: us-central1-docker.pkg.dev/boutique-ms-demo-448218/pr-images
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
@@ -45,7 +45,7 @@ opentelemetryCollector:
   create: false
   name: opentelemetrycollector
   # Specifies the project id for the otel collector. If set as "PROJECT_ID" (default value), an initContainer will automatically retrieve the project id value from the metadata server.
-  projectId: "boutique-ms-demo"
+  projectId: "boutique-ms-demo-448218"
 
 googleCloudOperations:
   profiler: false
