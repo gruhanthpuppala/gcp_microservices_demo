@@ -90,6 +90,25 @@ jobs:
           echo "Fetching Runner Public IP:"
           curl https://api.ipify.org
 
+      - name: Create GAR Repository if Not Exists
+        run: |
+          REPO_NAME="pr-images"
+          REGION="us-central1"
+          echo "DEBUG: Checking if GAR repository '$REPO_NAME' exists in region '$REGION'..."
+          if ! gcloud artifacts repositories describe $REPO_NAME --location=$REGION > /dev/null 2>&1; then
+            echo "DEBUG: Repository '$REPO_NAME' not found. Creating it..."
+            gcloud artifacts repositories create $REPO_NAME \
+                --repository-format=docker \
+                --location=$REGION \
+                --description="Repository for PR images"
+            if [[ $? -ne 0 ]]; then
+              echo "ERROR: Failed to create GAR repository '$REPO_NAME'. Exiting..."
+              exit 1
+            fi
+          else
+            echo "DEBUG: Repository '$REPO_NAME' already exists."
+          fi
+
       - name: Build + Deploy PR images to GKE
         timeout-minutes: 20
         run: |
