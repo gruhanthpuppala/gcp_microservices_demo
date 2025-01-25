@@ -6,7 +6,7 @@ duration: 5
 collect_project: true
 collect_region: true
 region_type: compute
-region_default: us-central1-a
+region_default: us-central1
 hard_settings:
   filepath_manifest: ../kustomize/
   memorystore: "false"

@@ -18,7 +18,7 @@ set -e
 set -x
 
 # Set sensible defaults
-REGION=us-central1-a
+REGION=us-central1
 ALLOYDB_CLUSTER_NAME=onlineboutique-cluster
 ALLOYDB_CARTS_DATABASE_NAME=carts
 ALLOYDB_CARTS_TABLE_NAME=cart_items

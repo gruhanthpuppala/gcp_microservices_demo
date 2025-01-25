@@ -129,7 +129,7 @@ export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
 DIR="terraform"
 gcloud services enable cloudresourcemanager.googleapis.com --project=$PROJECT
-REGION="us-central1-a"
+REGION="us-central1"
 NAME="online-boutique"
 NAMESPACE="default"
 FILEPATH_MANIFEST="../kustomize/"
