@@ -19,7 +19,7 @@ metadata:
   name: app
 build:
   artifacts:
-    - image: emailservice
+    - image: us-central1-docker.pkg.dev/boutique-ms-demo-448218/pr-images/emailservice
       context: src/emailservice
     - image: us-central1-docker.pkg.dev/boutique-ms-demo-448218/pr-images/productcatalogservice
       context: src/productcatalogservice
@@ -46,13 +46,14 @@ build:
   tagPolicy:
     gitCommit: {}
   local:
-    useBuildkit: false
+    useBuildkit: true  # Enabled BuildKit for faster and more efficient builds
 manifests:
   kustomize:
     paths:
       - kubernetes-manifests
 deploy:
-  kubectl: {}
+  kubectl:
+    defaultNamespace: pr1  # Ensure namespace is defined for all deployments
 profiles:
   - name: gcb
     build:
@@ -84,11 +85,16 @@ build:
   artifacts:
     - image: us-central1-docker.pkg.dev/boutique-ms-demo-448218/pr-images/loadgenerator
       context: src/loadgenerator
+      docker:
+        dockerfile: Dockerfile  # Explicitly define the Dockerfile
+  tagPolicy:
+    gitCommit: {}  # Ensure consistent tagging
 manifests:
   rawYaml:
     - ./kubernetes-manifests/loadgenerator.yaml
 deploy:
-  kubectl: {}
+  kubectl:
+    defaultNamespace: pr1  # Ensure namespace is defined for loadgenerator
 profiles:
   - name: gcb
     build:
