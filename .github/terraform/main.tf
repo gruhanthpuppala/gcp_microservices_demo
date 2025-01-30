@@ -96,7 +96,7 @@ resource "google_project_iam_member" "gke_clusters_service_account_role_stackdri
 
 # The GKE cluster used for pull-request (PR) staging deployments.
 resource "google_container_cluster" "prs_gke_cluster" {
-  name                = "prs-gke-cluster"
+  name                = "boutiqe-cluster"
   location            = "us-central1"
   enable_autopilot    = true
   project             = var.project_id

@@ -1,0 +1,25 @@
+name: Dependencies check
+
+on:
+  workflow_dispatch:
+
+jobs:
+  install-dependencies:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          repository: gruhanthpuppala/gcp_microservices_demo
+          ref: develop-branch
+
+      - name: Install Dependencies
+        run: |
+          cd .github/workflows
+          chmod +x install-dependencies.sh
+          ./install-dependencies.sh
+
+      - name: Create Marker File
+        run: |
+          touch /tmp/dependencies_installed.marker
+          echo "Marker file created to indicate successful installation of dependencies."

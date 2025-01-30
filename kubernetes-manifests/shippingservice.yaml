@@ -42,7 +42,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: shippingservice
+        image: us-central1-docker.pkg.dev/boutique-ms-demo-448218/pr-images/shippingservice
         ports:
         - containerPort: 50051
         env:
