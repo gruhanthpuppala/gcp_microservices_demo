@@ -44,7 +44,7 @@ spec:
                 - ALL
             privileged: false
             readOnlyRootFilesystem: true
-          image: frontend
+          image: us-central1-docker.pkg.dev/boutique-ms-demo-448218/pr-images/frontend
           ports:
           - containerPort: 8080
           readinessProbe:

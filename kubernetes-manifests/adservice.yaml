@@ -43,7 +43,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: adservice
+        image: us-central1-docker.pkg.dev/boutique-ms-demo-448218/pr-images/adservice
         ports:
         - containerPort: 9555
         env:

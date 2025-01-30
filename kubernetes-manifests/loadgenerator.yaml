@@ -77,7 +77,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: loadgenerator
+        image: us-central1-docker.pkg.dev/boutique-ms-demo-448218/pr-images/loadgenerator
         env:
         - name: FRONTEND_ADDR
           value: "frontend:80"

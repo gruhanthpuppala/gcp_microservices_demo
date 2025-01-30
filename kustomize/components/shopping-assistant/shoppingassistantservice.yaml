@@ -43,7 +43,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: false
-        image: shoppingassistantservice
+        image: us-central1-docker.pkg.dev/boutique-ms-demo-448218/pr-images/shoppingassistantservice
         ports:
         - name: http
           containerPort: 8080
